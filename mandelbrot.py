@@ -16,4 +16,5 @@ float
 Output value
 """
 # TODO : Implement the algorithm
+#Added this comment for the sake of the exercise
 pass
