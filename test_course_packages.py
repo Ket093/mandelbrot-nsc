@@ -1,24 +1,17 @@
-print('Course Package Check')
-print('-------------------')
-checks = [
-    ('numpy', 'import numpy'),
-    ('matplotlib', 'import matplotlib'),
-    ('scipy', 'import scipy'),
-    ('numba', 'import numba'),
-    ('pytest', 'import pytest'),
-    ('dask', 'import dask'),
-    ('distributed', 'import distributed')
-]
-all_ok = True
-for package_name, import_command in checks:
-    try:
-        exec(import_command)
-        print(f'OK - {package_name}')
-    except:
-        print(f'FAIL - {package_name}')
-        all_ok = False
-print('-------------------')
-if all_ok:
-    print('PASS: All packages installed')
-else:
-    print('FAIL: Some packages missing')
+print("--- TEST COURSE PACKAGES----")
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy
+import numba
+import pytest
+import dask
+import distributed
+
+print("✅ All packages imported successfully!")
+print(f"NumPy: {np.__version__}")
+print(f"Matplotlib: {plt.matplotlib.__version__}")
+print(f"SciPy: {scipy.__version__}")
+print(f"Numba: {numba.__version__}")
+print(f"Pytest: {pytest.__version__}")
+print(f"Dask: {dask.__version__}")
+print(f"Distributed: {distributed.__version__}")
