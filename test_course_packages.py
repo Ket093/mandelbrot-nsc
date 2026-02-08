@@ -1,4 +1,4 @@
-print("--- TEST COURSE PACKAGES----")
+print("---- TEST COURSE PACKAGES----")
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy
