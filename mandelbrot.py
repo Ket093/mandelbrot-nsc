@@ -104,3 +104,61 @@ def compute_mandelbrot(xmin=-2.0, xmax=1.0,
             results[row, col] = iterations
 
     return results
+
+import time
+
+def test_grid_performance():
+    """Test the grid function and measure performance."""
+    print("\n" + "="*60)
+    print("Step 3 & 4: Testing compute_mandelbrot and measuring time")
+    print("="*60)
+
+    # Test 1: Small grid (for quick testing)
+    print("\nTest 1: Small grid (10x10)")
+    start = time.time()
+    small_grid = compute_mandelbrot(width=10, height=10, max_iter=100)
+    elapsed = time.time() - start
+    print(f"Time: {elapsed:.4f} seconds")
+    print(f"Grid shape: {small_grid.shape}")
+    print(f"Min value: {small_grid.min()}, Max value: {small_grid.max()}")
+
+    # Test 2: Medium grid
+    print("\nTest 2: Medium grid (100x100)")
+    start = time.time()
+    medium_grid = compute_mandelbrot(width=100, height=100, max_iter=100)
+    elapsed = time.time() - start
+    print(f"Time: {elapsed:.4f} seconds")
+    print(f"Grid shape: {medium_grid.shape}")
+
+    # Test 3: Large grid (as per exercise: 1024x1024)
+    print("\nTest 3: Large grid (256x256) - smaller for testing")
+    print("Note: 1024x1024 might take a while with this simple code")
+    start = time.time()
+    large_grid = compute_mandelbrot(width=256, height=256, max_iter=100)
+    elapsed = time.time() - start
+    print(f"Time: {elapsed:.4f} seconds")
+    print(f"Grid shape: {large_grid.shape}")
+
+    return small_grid, medium_grid, large_grid
+
+
+# Run the tests
+if __name__ == "__main__":
+    print("Testing mandelbrot_point function:")
+    print("-" * 40)
+
+    # Test single point function
+    result1 = mandelbrot_point(0 + 0j, 100)
+    print(f"c = 0: {result1} iterations")
+
+    result2 = mandelbrot_point(1 + 0j, 100)
+    print(f"c = 1: {result2} iterations")
+
+    result3 = mandelbrot_point(-1 + 0j, 100)
+    print(f"c = -1: {result3} iterations")
+
+    # Test grid function and measure performance
+    test_grid_performance()
+
+    print("\n" + "="*60)
+    print("Steps 3 & 4 completed successfully!")
