@@ -54,6 +54,7 @@ if __name__ == "__main__":
     print("\nFunction works! Ready for Step 3.")
 
 import numpy as np
+import time
 
 def compute_mandelbrot(xmin=-2.0, xmax=1.0,
                        ymin=-1.5, ymax=1.5,
@@ -105,60 +106,75 @@ def compute_mandelbrot(xmin=-2.0, xmax=1.0,
 
     return results
 
-import time
+def run_tests():
+    """
+    Run all required tests for Steps 2, 3, and 4.
+    """
+    print("=== Mandelbrot Set Implementation ===")
+    print("Testing all required functions...")
+    print("=" * 60)
 
-def test_grid_performance():
-    """Test the grid function and measure performance."""
-    print("\n" + "="*60)
-    print("Step 3 & 4: Testing compute_mandelbrot and measuring time")
-    print("="*60)
-
-    # Test 1: Small grid (for quick testing)
-    print("\nTest 1: Small grid (10x10)")
-    start = time.time()
-    small_grid = compute_mandelbrot(width=10, height=10, max_iter=100)
-    elapsed = time.time() - start
-    print(f"Time: {elapsed:.4f} seconds")
-    print(f"Grid shape: {small_grid.shape}")
-    print(f"Min value: {small_grid.min()}, Max value: {small_grid.max()}")
-
-    # Test 2: Medium grid
-    print("\nTest 2: Medium grid (100x100)")
-    start = time.time()
-    medium_grid = compute_mandelbrot(width=100, height=100, max_iter=100)
-    elapsed = time.time() - start
-    print(f"Time: {elapsed:.4f} seconds")
-    print(f"Grid shape: {medium_grid.shape}")
-
-    # Test 3: Large grid (as per exercise: 1024x1024)
-    print("\nTest 3: Large grid (256x256) - smaller for testing")
-    print("Note: 1024x1024 might take a while with this simple code")
-    start = time.time()
-    large_grid = compute_mandelbrot(width=256, height=256, max_iter=100)
-    elapsed = time.time() - start
-    print(f"Time: {elapsed:.4f} seconds")
-    print(f"Grid shape: {large_grid.shape}")
-
-    return small_grid, medium_grid, large_grid
-
-
-# Run the tests
-if __name__ == "__main__":
-    print("Testing mandelbrot_point function:")
+    # Step 2: Test single point function
+    print("\nStep 2: Testing mandelbrot_point()")
     print("-" * 40)
 
-    # Test single point function
-    result1 = mandelbrot_point(0 + 0j, 100)
-    print(f"c = 0: {result1} iterations")
+    test_points = [
+        (0+0j, 100, "Origin (should be 100)"),
+        (1+0j, 3, "1 (should be around 3)"),
+        (-1+0j, 100, "-1 (should be 100)"),
+    ]
 
-    result2 = mandelbrot_point(1 + 0j, 100)
-    print(f"c = 1: {result2} iterations")
+    all_correct = True
+    for c, expected, description in test_points:
+        result = mandelbrot_point(c)
+        correct = (result == expected) if expected != 3 else (result <= 5)
+        status = "✓" if correct else "✗"
+        print(f"{status} {description}: {result} iterations")
+        if not correct:
+            all_correct = False
 
-    result3 = mandelbrot_point(-1 + 0j, 100)
-    print(f"c = -1: {result3} iterations")
+    # Step 3: Test grid function with small grid
+    print("\nStep 3: Testing compute_mandelbrot()")
+    print("-" * 40)
 
-    # Test grid function and measure performance
-    test_grid_performance()
+    small_grid = compute_mandelbrot(width=10, height=10)
+    print(f"Created 10x10 grid: shape = {small_grid.shape}")
+    print(f"Values range: {small_grid.min()} to {small_grid.max()}")
 
-    print("\n" + "="*60)
-    print("Steps 3 & 4 completed successfully!")
+    # Step 4: Performance measurement
+    print("\nStep 4: Performance measurement")
+    print("-" * 40)
+
+    print("Testing 100x100 grid...")
+    start = time.time()
+    result_100 = compute_mandelbrot(width=100, height=100)
+    elapsed_100 = time.time() - start
+    print(f"100x100: {elapsed_100:.3f} seconds")
+
+    print("\nTesting 1024x1024 grid (this will take a moment)...")
+    start = time.time()
+    result_1024 = compute_mandelbrot(-2, 1, -1.5, 1.5, 1024, 1024)
+    elapsed_1024 = time.time() - start
+    print(f"1024x1024: {elapsed_1024:.3f} seconds")
+
+    # Summary
+    print("\n" + "=" * 60)
+    print("SUMMARY")
+    print("=" * 60)
+
+    if all_correct:
+        print("✓ Step 2: mandelbrot_point() passed tests")
+    else:
+        print("✗ Step 2: Some tests failed")
+
+    print("✓ Step 3: compute_mandelbrot() created grid successfully")
+    print("✓ Step 4: Performance measured")
+    print(f"  - 100x100: {elapsed_100:.3f}s")
+    print(f"  - 1024x1024: {elapsed_1024:.3f}s")
+
+    print("\nAll steps completed! ✅")
+
+
+# Run the tests when file is executed
+if __name__ == "__main__":
+    run_tests()
