@@ -32,7 +32,24 @@ def compute_mandelbrot(width=100, height=100, max_iter=100):
 
     return results
 
-# ===== SIMPLE VISUALIZATION =====
+ # NUMPY VECTORIZED VERSION (FAST!)
+def numpy_mandelbrot(xmin=-2, xmax=1, ymin=-1.5, ymax=1.5, width=1024, height=1024, max_iter=100):
+    """NumPy vectorized Mandelbrot implementation - much faster!"""
+    x = np.linspace(xmin, xmax, width)
+    y = np.linspace(ymin, ymax, height)
+    X, Y = np.meshgrid(x, y)
+    C = X + 1j * Y
+
+    Z = np.zeros_like(C, dtype=np.complex128)
+    M = np.zeros(C.shape, dtype=int)
+
+    for i in range(max_iter):
+        mask = np.abs(Z) <= 2
+        Z[mask] = Z[mask]**2 + C[mask]
+        M[mask] += 1
+
+    return M
+     #SIMPLE VISUALIZATION 
 import matplotlib.pyplot as plt
 
 print("Creating Mandelbrot image...")
