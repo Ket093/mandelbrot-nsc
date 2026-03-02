@@ -67,4 +67,20 @@ def bench(func, *args, runs=5):
     median = statistics.median(times)
     return median
 
-    return result
+# Special benchmark function for naive version (takes 3 arguments)
+def bench_naive(func, width, height, max_iter, runs=5):
+    """Benchmark for compute_mandelbrot which takes 3 arguments"""
+    print(f"  Warming up {func.__name__}...")
+    func(width=width, height=height, max_iter=max_iter)  # Warm-up
+
+    times = []
+    for i in range(runs):
+        t0 = time.perf_counter()  # Start timer
+        func(width=width, height=height, max_iter=max_iter)  # Run with keyword args
+        t1 = time.perf_counter()   # Stop timer
+        times.append(t1 - t0)      # Record time in seconds
+        print(f"    Run {i+1}: {times[-1]*1000:.2f} ms")
+
+    median = statistics.median(times)
+    return median
+    
