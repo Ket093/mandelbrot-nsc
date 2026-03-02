@@ -170,7 +170,7 @@ for name in ['float64', 'float32']:
             print(f"{name:<12} {times[name]:<18.2f} {speedup:<12.2f}x")
 
 # Recommendation
-print("\n" + "+" * 50)
+print("\n" + "+" * 52)
 print("RECOMMENDATION")
 print("+" * 50)
 
