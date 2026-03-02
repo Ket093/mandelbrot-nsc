@@ -34,4 +34,13 @@ def mandelbrot_numba(xmin=-2, xmax=1, ymin=-1.5, ymax=1.5, width=1024, height=10
     # Result array
     result = np.zeros((height, width), dtype=np.int32)
 
+    # Triple nested loops 
+    for i in range(height):          # Loop over rows
+        y_val = y[i]
+        for j in range(width):       # Loop over columns
+            x_val = x[j]
+            c = x_val + 1j * y_val   # Create complex number
+
+            # Inner loop will be added next
+
     return result
