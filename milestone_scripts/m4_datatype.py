@@ -64,3 +64,22 @@ def mandelbrot_float32(xmin, xmax, ymin, ymax, width, height, max_iter=100):
             result[i, j] = n
     
     return result
+
+print("+" * 40)
+print("MILESTONE 4: Data Type Optimization")
+print("+" * 40)
+
+# Configuration (using 512x512 for faster testing)
+width, height = 512, 512
+max_iter = 100
+runs = 3
+
+print(f"\nConfiguration:")
+print(f"  Resolution: {width} x {height}")
+print(f"  Max iterations: {max_iter}")
+print(f"  Runs per type: {runs}")
+print("+" * 40)
+
+# Test each precision
+results = {}
+times = {}
