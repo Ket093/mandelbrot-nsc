@@ -109,6 +109,27 @@ for func, name in zip(funcs, names):
     times[name] = median_ms
     results[name] = img
     print(f"  Median: {median_ms:.2f} ms")
+# Accuracy comparison
+print("\n" + "+" * 60)
+print("ACCURACY COMPARISON (float32 vs float64)")
+print("+" * 60)
+
+ref = results['float64']
+comp = results['float32']
+total_pixels = width * height
+
+diff = np.abs(comp - ref)
+max_diff = diff.max()
+diff_pixels = (diff > 0).sum()
+percent_diff = (diff_pixels / total_pixels) * 100
+
+print(f"\nfloat32 vs float64:")
+print(f"  Max difference: {max_diff}")
+print(f"  Different pixels: {diff_pixels} / {total_pixels} ({percent_diff:.4f}%)")
+if max_diff == 0:
+    print(f"  Identical to float64")
+elif max_diff < 5:
+    print(f"  Very minor differences (still acceptable for Mandelbrot)")
 
 # Visual comparison
 print("\n" + "+" * 60)
@@ -132,3 +153,37 @@ axes[1].set_ylabel('Imaginary')
 plt.tight_layout()
 plt.savefig('m4_precision_comparison.png', dpi=150, bbox_inches='tight')
 print("Saved: m4_precision_comparison.png")
+
+# Final summary
+print("\n" + "+" * 50)
+print("RESULTS - To be used for report")
+print("+" * 50)
+print(f"\n{'Data Type':<12} {'Median Time (ms)':<18} {'Speedup':<12}")
+print("+" * 50)
+
+for name in ['float64', 'float32']:
+    if name in times:
+        if name == 'float64':
+            print(f"{name:<12} {times[name]:<18.2f} {'1.00x':<12}")
+        else:
+            speedup = times['float64'] / times[name]
+            print(f"{name:<12} {times[name]:<18.2f} {speedup:<12.2f}x")
+
+# Recommendation
+print("\n" + "+" * 50)
+print("RECOMMENDATION")
+print("+" * 50)
+
+speedup = times['float64'] / times['float32']
+diff = np.abs(results['float32'] - results['float64']).max()
+
+if diff == 0:
+    print(f"float32 is {speedup:.2f}x faster with no quality loss - USE THIS")
+elif diff < 5 and speedup > 1.05:
+    print(f"float32 is {speedup:.2f}x faster with very minor differences - RECOMMENDED")
+elif diff < 5 and speedup <= 1.05:
+    print(f"float32 shows no significant speedup ({speedup:.2f}x) with very minor differences - stick with float64")
+else:
+    print(f"float32 has visible differences ({diff} max diff) - stick with float64")
+
+print("\nMilestone 4 is now complete!")
