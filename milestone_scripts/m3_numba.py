@@ -41,6 +41,14 @@ def mandelbrot_numba(xmin=-2, xmax=1, ymin=-1.5, ymax=1.5, width=1024, height=10
             x_val = x[j]
             c = x_val + 1j * y_val   # Create complex number
 
-            # Inner loop will be added next
+            z = 0j                    # Initialize z
+            n = 0                     # Iteration counter
+
+            # Basic version with abs()
+            while n < max_iter and abs(z) <= 2:
+                z = z*z + c
+                n += 1
+
+            result[i, j] = n
 
     return result
