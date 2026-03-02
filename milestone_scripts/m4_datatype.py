@@ -40,3 +40,27 @@ def mandelbrot_float64(xmin, xmax, ymin, ymax, width, height, max_iter=100):
     return result
 
 print("M4: Setup complete - ready to implement precision functions")
+
+@njit
+def mandelbrot_float32(xmin, xmax, ymin, ymax, width, height, max_iter=100):
+    """Mandelbrot with float32 precision"""
+    x = np.linspace(xmin, xmax, width).astype(np.float32)
+    y = np.linspace(ymin, ymax, height).astype(np.float32)
+    
+    result = np.zeros((height, width), dtype=np.int32)
+    
+    for i in range(height):
+        y_val = y[i]
+        for j in range(width):
+            x_val = x[j]
+            c = np.complex64(x_val + 1j * y_val)
+            
+            z = np.complex64(0j)
+            n = 0
+            while n < max_iter and (z.real * z.real + z.imag * z.imag) <= 4.0:
+                z = z*z + c
+                n += 1
+            
+            result[i, j] = n
+    
+    return result
