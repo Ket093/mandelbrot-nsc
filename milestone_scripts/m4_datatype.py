@@ -83,3 +83,29 @@ print("+" * 40)
 # Test each precision
 results = {}
 times = {}
+
+# Test float64
+print(f"\nTesting float64...")
+funcs = [mandelbrot_float64, mandelbrot_float32]
+names = ['float64', 'float32']
+
+for func, name in zip(funcs, names):
+    print(f"\nTesting {name}...")
+    
+    # Warm-up run
+    _ = func(-2, 1, -1.5, 1.5, width, height, max_iter)
+    
+    # Timed runs
+    run_times = []
+    for i in range(runs):
+        t0 = time.perf_counter()
+        img = func(-2, 1, -1.5, 1.5, width, height, max_iter)
+        t1 = time.perf_counter()
+        elapsed_ms = (t1 - t0) * 1000
+        run_times.append(elapsed_ms)
+        print(f"  Run {i+1}: {elapsed_ms:.2f} ms")
+    
+    median_ms = np.median(run_times)
+    times[name] = median_ms
+    results[name] = img
+    print(f"  Median: {median_ms:.2f} ms")
