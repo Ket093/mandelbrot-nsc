@@ -51,4 +51,20 @@ def mandelbrot_numba(xmin=-2, xmax=1, ymin=-1.5, ymax=1.5, width=1024, height=10
 
             result[i, j] = n
 
+# Create a benchmark function for functions that take 7 arguments (NumPy and Numba)
+def bench(func, *args, runs=5):
+    print(f"  Warming up {func.__name__}...")
+    func(*args)  # (Not timed)
+
+    times = []
+    for i in range(runs):
+        t0 = time.perf_counter()  # Start timer
+        func(*args)                # Run the function
+        t1 = time.perf_counter()   # Stop timer
+        times.append(t1 - t0)      # Record time in seconds
+        print(f"    Run {i+1}: {times[-1]*1000:.2f} ms")
+
+    median = statistics.median(times)
+    return median
+
     return result
