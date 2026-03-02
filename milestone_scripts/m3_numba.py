@@ -23,3 +23,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from mandelbrot import compute_mandelbrot, numpy_mandelbrot
 
 print("All imports completed successfully!")
+
+# Create Numba version of naive function
+@njit
+def mandelbrot_numba(xmin=-2, xmax=1, ymin=-1.5, ymax=1.5, width=1024, height=1024, max_iter=100):
+    """Numba-optimized Mandelbrot - to be implemented"""
+    pass
