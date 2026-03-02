@@ -109,3 +109,26 @@ for func, name in zip(funcs, names):
     times[name] = median_ms
     results[name] = img
     print(f"  Median: {median_ms:.2f} ms")
+
+# Visual comparison
+print("\n" + "+" * 60)
+print("GENERATING VISUAL COMPARISON")
+print("+" * 60)
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+# Plot float64
+axes[0].imshow(results['float64'], cmap='hot', extent=[-2, 1, -1.5, 1.5])
+axes[0].set_title(f"float64\n{times['float64']:.1f} ms", fontsize=12)
+axes[0].set_xlabel('Real')
+axes[0].set_ylabel('Imaginary')
+
+# Plot float32
+axes[1].imshow(results['float32'], cmap='hot', extent=[-2, 1, -1.5, 1.5])
+axes[1].set_title(f"float32\n{times['float32']:.1f} ms", fontsize=12)
+axes[1].set_xlabel('Real')
+axes[1].set_ylabel('Imaginary')
+
+plt.tight_layout()
+plt.savefig('m4_precision_comparison.png', dpi=150, bbox_inches='tight')
+print("Saved: m4_precision_comparison.png")
