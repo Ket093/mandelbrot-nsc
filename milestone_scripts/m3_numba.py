@@ -83,4 +83,29 @@ def bench_naive(func, width, height, max_iter, runs=5):
 
     median = statistics.median(times)
     return median
+
+# Run the benchmarks
+print("=" * 70)
+print("MILESTONE 3: Numba JIT Compilation")
+print("-" * 70)
+
+# Warm up Numba (compilation happens here - Not timed!)
+print("\nWarming up Numba (compilation)...")
+_ = mandelbrot_numba(-2, 1, -1.5, 1.5, 64, 64, 100)
+print("Numba compiled successfully!")
     
+# Arguments for vectorized functions (NumPy and Numba take 7 args)
+args_vectorized = (-2, 1, -1.5, 1.5, 1024, 1024, 100)
+
+print("\nBenchmarking all versions (5 runs each)...")
+print("-" * 40)
+
+# Benchmark Naive version (uses special function with 3 arguments)
+print("\n1. Benchmarking Naive version...")
+print("-" * 40)
+t_naive = bench_naive(compute_mandelbrot, 1024, 1024, 100)
+
+# Benchmark NumPy version (uses 7 arguments)
+print("\n2. Benchmarking NumPy version...")
+print("-" * 40)
+t_numpy = bench(numpy_mandelbrot, *args_vectorized)
