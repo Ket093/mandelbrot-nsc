@@ -45,3 +45,31 @@ def mandelbrot_pixel(c_real, c_imag, max_iter):
         z_imag = new_imag
     
     return max_iter
+
+@njit
+def mandelbrot_chunk(row_start, row_end, N,
+                     x_min, x_max, y_min, y_max, max_iter):
+    """
+    Compute Mandelbrot for a range of rows.
+    """
+    # Create empty array to store results for this chunk
+    out = np.empty((row_end - row_start, N), dtype=np.int32)
+    
+    # Calculate how much to move between pixels
+    dx = (x_max - x_min) / N
+    dy = (y_max - y_min) / N
+    
+    # For each row in this chunk
+    for r in range(row_end - row_start):
+        # Calculate y coordinate (imaginary part) for this row
+        c_imag = y_min + (r + row_start) * dy
+        
+        # For each column in this row
+        for col in range(N):
+            # Calculate x coordinate (real part) for this column
+            c_real = x_min + col * dx
+            
+            # Compute the pixel value and store it
+            out[r, col] = mandelbrot_pixel(c_real, c_imag, max_iter)
+    
+    return out
