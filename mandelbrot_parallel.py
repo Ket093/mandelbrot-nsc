@@ -163,3 +163,68 @@ def mandelbrot_parallel(N, x_min, x_max, y_min, y_max,
     final_image = np.vstack(results)
     
     return final_image
+
+if __name__ == "__main__":
+    N = 1024
+    max_iter = 100
+    x_min, x_max = -2.5, 1.0
+    y_min, y_max = -1.25, 1.25
+    
+    print("-" * 40)
+    print("MP2 M3: Parallel Mandelbrot Benchmark")
+    print("=" * 40)
+    print(f"\nGrid: {N} x {N}")
+    print(f"Max iterations: {max_iter}")
+    print(f"Region: x=[{x_min}, {x_max}], y=[{y_min}, {y_max}]")
+    
+    # === SERIAL BASELINE ===
+    print("\n" + "-" * 40)
+    print("Serial baseline")
+    print("-" * 40)
+    
+    _ = mandelbrot_serial(N, x_min, x_max, y_min, y_max, max_iter)
+    
+    times = []
+    for _ in range(3):
+        start = time.time()
+        mandelbrot_serial(N, x_min, x_max, y_min, y_max, max_iter)
+        times.append(time.time() - start)
+    t_serial = statistics.median(times)
+    print(f"Serial time: {t_serial:.3f} seconds")
+    
+    # === PARALLEL BENCHMARK ===
+    print("\n" + "-" * 40)
+    print("Parallel benchmark")
+    print("-" * 40)
+    print(f"{'Workers':>8} {'Time (s)':>10} {'Speedup':>10} {'Efficiency':>12}")
+    print("-" * 50)
+    
+    cpu_count = os.cpu_count()
+    
+    for n_workers in range(1, cpu_count + 1):
+        chunk_size = max(1, N // n_workers)
+        chunks = []
+        row = 0
+        while row < N:
+            row_end = min(row + chunk_size, N)
+            chunks.append((row, row_end, N, x_min, x_max, y_min, y_max, max_iter))
+            row = row_end
+        
+        with Pool(processes=n_workers) as pool:
+            pool.map(_worker, chunks)  # warm-up
+            
+            times = []
+            for _ in range(3):
+                start = time.time()
+                np.vstack(pool.map(_worker, chunks))
+                times.append(time.time() - start)
+            t_par = statistics.median(times)
+        
+        speedup = t_serial / t_par
+        efficiency = (speedup / n_workers) * 100
+        
+        print(f"{n_workers:8d} {t_par:10.3f} {speedup:10.2f}x {efficiency:11.1f}%")
+    
+    print("\n" + "-" * 40)
+    print("Benchmark complete")
+    print("-" * 40)
