@@ -73,3 +73,31 @@ def mandelbrot_chunk(row_start, row_end, N,
             out[r, col] = mandelbrot_pixel(c_real, c_imag, max_iter)
     
     return out
+
+def mandelbrot_serial(N, x_min, x_max, y_min, y_max, max_iter=100):
+    """
+    Compute entire Mandelbrot set using a single chunk.
+    
+    This is a wrapper around mandelbrot_chunk that processes all rows at once.
+    It gives us a baseline to compare against parallel versions.
+    """
+    # Call chunk function for ALL rows (from row 0 to row N)
+    return mandelbrot_chunk(0, N, N, x_min, x_max, y_min, y_max, max_iter)
+def _worker(args):
+    """
+    Unpack arguments for mandelbrot_chunk.
+    
+    This helper is needed because pool.map() only passes one argument.
+    
+    Parameters
+    ----------
+    args : tuple
+        Tuple containing (row_start, row_end, N, x_min, x_max, y_min, y_max, max_iter)
+    
+    Returns
+    -------
+    numpy.ndarray
+        2D array from mandelbrot_chunk
+    """
+    # The * operator "unpacks" the tuple into separate arguments
+    return mandelbrot_chunk(*args)
