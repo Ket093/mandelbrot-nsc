@@ -83,6 +83,7 @@ def mandelbrot_serial(N, x_min, x_max, y_min, y_max, max_iter=100):
     """
     # Call chunk function for ALL rows (from row 0 to row N)
     return mandelbrot_chunk(0, N, N, x_min, x_max, y_min, y_max, max_iter)
+
 def _worker(args):
     """
     Unpack arguments for mandelbrot_chunk.
@@ -92,6 +93,7 @@ def _worker(args):
     Parameters
     ----------
     args : tuple
+
         Tuple containing (row_start, row_end, N, x_min, x_max, y_min, y_max, max_iter)
     
     Returns
@@ -101,10 +103,11 @@ def _worker(args):
     """
     # The * operator "unpacks" the tuple into separate arguments
     return mandelbrot_chunk(*args)
+
 def mandelbrot_parallel(N, x_min, x_max, y_min, y_max, 
-                        max_iter=100, n_workers=None):
+                        max_iter=100, n_workers=4, n_chunks=None, pool=None):
     """
-    Compute Mandelbrot set in parallel using multiple processes.
+    Compute Mandelbrot set in parallel with configurable chunks.
     
     Parameters
     ----------
@@ -113,56 +116,51 @@ def mandelbrot_parallel(N, x_min, x_max, y_min, y_max,
     x_min, x_max, y_min, y_max : float
         Coordinate boundaries
     max_iter : int
-        Maximum iterations (default 100)
-    n_workers : int or None
-        Number of worker processes to use.
-        If None, uses all available CPU cores.
+        Maximum iterations
+    n_workers : int
+        Number of worker processes
+    n_chunks : int or None
+        Number of chunks to split work into (if None, uses n_workers)
+    pool : multiprocessing.Pool or None
+        Existing pool to reuse (if None, creates new pool)
     
     Returns
     -------
     numpy.ndarray
         2D array of shape (N, N) with iteration counts
     """
-    # If n_workers not specified, use all available CPU cores
-    if n_workers is None:
-        n_workers = os.cpu_count()
+    # If n_chunks not specified, use n_workers (original behavior)
+    if n_chunks is None:
+        n_chunks = n_workers
     
-    print(f"  Using {n_workers} worker processes")
+    print(f"  Using {n_workers} workers, {n_chunks} chunks")
     
-    # Step 1: Divide the rows into chunks for each worker
-    # Calculate how many rows per chunk (at least 1)
-    chunk_size = max(1, N // n_workers)
+    # Calculate chunk size (at least 1 row per chunk)
+    chunk_size = max(1, N // n_chunks)
     
-    # Create a list of chunks (each chunk is a tuple of parameters)
+    # Create list of chunks
     chunks = []
     row = 0
-    
     while row < N:
         row_end = min(row + chunk_size, N)
-        # Each chunk contains all parameters needed for mandelbrot_chunk
-        chunk_args = (row, row_end, N, x_min, x_max, y_min, y_max, max_iter)
-        chunks.append(chunk_args)
+        chunks.append((row, row_end, N, x_min, x_max, y_min, y_max, max_iter))
         row = row_end
     
     print(f"  Created {len(chunks)} chunks of work")
     
-    # Step 2: Create a pool of worker processes
-    with Pool(processes=n_workers) as pool:
-        # Step 3: Warm-up run (compiles Numba in each worker)
-        # The first time each worker runs, Numba compiles the code
-        # We don't time this - it's just preparation
-        print(f"  Warming up workers...")
-        pool.map(_worker, chunks)
+    # Use existing pool if provided
+    if pool is not None:
+        return np.vstack(pool.map(_worker, chunks))
+    
+    # Create new pool (with warm-up)
+    with Pool(processes=n_workers) as new_pool:
+        # Tiny warm-up to load Numba cache
+        tiny = [(0, 8, 8, x_min, x_max, y_min, y_max, max_iter)]
+        new_pool.map(_worker, tiny)
         
-        # Step 4: Actual timed computation
-        print(f"  Computing...")
-        results = pool.map(_worker, chunks)
-    
-    # Step 5: Assemble all chunks into the final image
-    # np.vstack stacks arrays vertically (one on top of another)
-    final_image = np.vstack(results)
-    
-    return final_image
+        # Actual computation
+        results = new_pool.map(_worker, chunks)
+        return np.vstack(results)
 
 if __name__ == "__main__":
     N = 1024
