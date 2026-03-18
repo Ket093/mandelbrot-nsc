@@ -169,19 +169,21 @@ if __name__ == "__main__":
     y_min, y_max = -1.25, 1.25
     
     print("-" * 40)
-    print("MP2 M3: Parallel Mandelbrot Benchmark")
-    print("=" * 40)
+    print("MP2 M2: Chunk Size Optimization")
+    print("-" * 40)
     print(f"\nGrid: {N} x {N}")
     print(f"Max iterations: {max_iter}")
     print(f"Region: x=[{x_min}, {x_max}], y=[{y_min}, {y_max}]")
     
     # === SERIAL BASELINE ===
     print("\n" + "-" * 40)
-    print("Serial baseline")
+    print("SERIAL BASELINE")
     print("-" * 40)
     
+    # Warm up JIT
     _ = mandelbrot_serial(N, x_min, x_max, y_min, y_max, max_iter)
     
+    # Time serial (3 runs, take median)
     times = []
     for _ in range(3):
         start = time.time()
@@ -190,17 +192,26 @@ if __name__ == "__main__":
     t_serial = statistics.median(times)
     print(f"Serial time: {t_serial:.3f} seconds")
     
-    # === PARALLEL BENCHMARK ===
+    # === CHUNK SIZE SWEEP ===
     print("\n" + "-" * 40)
-    print("Parallel benchmark")
+    print("CHUNK SIZE SWEEP")
     print("-" * 40)
-    print(f"{'Workers':>8} {'Time (s)':>10} {'Speedup':>10} {'Efficiency':>12}")
-    print("-" * 50)
     
-    cpu_count = os.cpu_count()
+    # Fix workers at optimum (from my results, 2 is best)
+    opt_workers = 2
+    print(f"Fixed workers: {opt_workers} (optimum from benchmark)")
     
-    for n_workers in range(1, cpu_count + 1):
-        chunk_size = max(1, N // n_workers)
+    # Test different chunk size multipliers
+    multipliers = [1, 2, 4, 8, 16]
+    
+    print(f"\n{'Multiplier':>10} {'Chunks':>8} {'Time (s)':>10} {'Speedup':>10} {'LIF':>10}")
+    print("-" * 40)
+    
+    for mult in multipliers:
+        n_chunks = mult * opt_workers
+        
+        # Create chunks
+        chunk_size = max(1, N // n_chunks)
         chunks = []
         row = 0
         while row < N:
@@ -208,9 +219,13 @@ if __name__ == "__main__":
             chunks.append((row, row_end, N, x_min, x_max, y_min, y_max, max_iter))
             row = row_end
         
-        with Pool(processes=n_workers) as pool:
-            pool.map(_worker, chunks)  # warm-up
+        # Create pool once and reuse for timing
+        with Pool(processes=opt_workers) as pool:
+            # Warm-up (load Numba cache)
+            tiny = [(0, 8, 8, x_min, x_max, y_min, y_max, max_iter)]
+            pool.map(_worker, tiny)
             
+            # Timed runs
             times = []
             for _ in range(3):
                 start = time.time()
@@ -219,10 +234,10 @@ if __name__ == "__main__":
             t_par = statistics.median(times)
         
         speedup = t_serial / t_par
-        efficiency = (speedup / n_workers) * 100
+        lif = (opt_workers * t_par / t_serial) - 1
         
-        print(f"{n_workers:8d} {t_par:10.3f} {speedup:10.2f}x {efficiency:11.1f}%")
+        print(f"{mult:10d}x {n_chunks:8d} {t_par:10.3f} {speedup:10.2f}x {lif:10.3f}")
     
     print("\n" + "-" * 40)
-    print("Benchmark complete")
+    print("SWEET SPOT: Identify smallest LIF value")
     print("-" * 40)
