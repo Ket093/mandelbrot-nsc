@@ -85,7 +85,7 @@ def compute_mandelbrot(x_min, x_max, y_min, y_max, width=100, height=100, max_it
 
     return results
 
-@njit(chache=True)
+@njit(cache=True)
 def mandelbrot_chunk(row_start, row_end, N,
                      x_min, x_max, y_min, y_max, max_iter):
     """
@@ -206,7 +206,6 @@ if __name__ == "__main__":
     max_iter = 100
     x_min, x_max = -2.5, 1.0
     y_min, y_max = -1.25, 1.25
-    N, max_iter = 1024, 100
     X_MIN, X_MAX, Y_MIN, Y_MAX = -2.5, 1.0, -1.25, 1.25
 
     # Serial baseline (Numba already warm after M1 warm-up)
