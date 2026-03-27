@@ -13,7 +13,7 @@ import statistics
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-@njit
+@njit(cache=True)
 def mandelbrot_pixel(c_real, c_imag, max_iter):
     """
     Calculate escape time for a single pixel.
@@ -85,7 +85,7 @@ def compute_mandelbrot(x_min, x_max, y_min, y_max, width=100, height=100, max_it
 
     return results
 
-@njit
+@njit(chache=True)
 def mandelbrot_chunk(row_start, row_end, N,
                      x_min, x_max, y_min, y_max, max_iter):
     """
