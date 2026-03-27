@@ -236,6 +236,8 @@ if __name__ == "__main__":
         speedup = t_serial / t_par
         print(f"{n_workers:2d} workers: {t_par:.3f}s, speedup={speedup:.2f}x, eff={speedup/n_workers*100:.0f}%")
     
+    print("\n" + "-" * 60)
+    print("M2 COMPLETE - Starting M3 Analysis")
     print("=" * 60)
     print("MP2 M3: Comprehensive Performance Analysis")
     print("=" * 60)
@@ -326,12 +328,10 @@ if __name__ == "__main__":
         t_par = statistics.median(times)
     
     speedup = t_naive / t_par
-    efficiency = (speedup / n_workers) * 100
     lif = (n_workers * t_par / t_serial) - 1
     
     print(f"Time: {t_par:.3f} seconds")
     print(f"Speedup: {speedup:.2f}x")
-    print(f"Efficiency: {efficiency:.1f}%")
     print(f"LIF: {lif:.3f}")
     
     # === IMPLEMENTATION 3: PARALLEL WITH MORE CHUNKS ===
@@ -365,25 +365,23 @@ if __name__ == "__main__":
         t_par2 = statistics.median(times)
     
     speedup2 = t_naive / t_par2
-    efficiency2 = (speedup2 / n_workers) * 100
     lif2 = (n_workers * t_par2 / t_serial) - 1
 
     
     print(f"Time: {t_par2:.3f} seconds")
     print(f"Speedup: {speedup2:.2f}x")
-    print(f"Efficiency: {efficiency2:.1f}%")
     print(f"LIF: {lif2:.3f}")
     
     # === SUMMARY TABLE ===
     print("\n" + "=" * 60)
     print("SUMMARY: Performance Comparison")
     print("=" * 60)
-    print(f"\n{'Implementation':<30} {'Time (s)':>10} {'Speedup':>10} {'Efficiency':>12} {'LIF':>10}")
+    print(f"\n{'Implementation':<30} {'Time (s)':>10} {'Speedup':>10} {'LIF':>10}")
     print("-" * 80)
     print(f"{'Naive':<30} {t_naive:>10.3f} {1.00:>10.2f}x {'-':>12} {'-':>10}")
     print(f"{'Serial Numba':<30} {t_serial:>10.3f} {t_serial_speedup:>10.2f}x {'-':>12} {'-':>10}")
-    print(f"{'Parallel (2 workers, 2 chunks)':<30} {t_par:>10.3f} {speedup:>10.2f}x {efficiency:>11.1f}% {lif:>10.3f}")
-    print(f"{'Parallel (2 workers, 32 chunks)':<30} {t_par2:>10.3f} {speedup2:>10.2f}x {efficiency2:>11.1f}% {lif2:>10.3f}")
+    print(f"{'Parallel (2 workers, 2 chunks)':<30} {t_par:>10.3f} {speedup:>10.2f}x {lif:>10.3f}")
+    print(f"{'Parallel (2 workers, 32 chunks)':<30} {t_par2:>10.3f} {speedup2:>10.2f}x {lif2:>10.3f}")
     print(f"{'Numpy Vectorized':<30} {t_numpy:>10.3f} {numpy_speedup:>10.2f}x {'-':>12} {'-':>10}")
     
     # === IMPLIED SERIAL FRACTION ===
