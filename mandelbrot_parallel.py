@@ -45,6 +45,45 @@ def mandelbrot_pixel(c_real, c_imag, max_iter):
         z_imag = new_imag
     
     return max_iter
+def mandelbrot_point(c, max_iter=100):
+    """Test if a point is in the Mandelbrot set."""
+    z = 0
+    for n in range(max_iter):
+        if abs(z) > 2:
+            return n
+        z = z*z + c
+    return max_iter
+def numpy_mandelbrot(xmin=-2, xmax=1, ymin=-1.5, ymax=1.5, width=1024, height=1024, max_iter=100):
+    """NumPy vectorized Mandelbrot implementation - much faster!"""
+    x = np.linspace(xmin, xmax, width)
+    y = np.linspace(ymin, ymax, height)
+    X, Y = np.meshgrid(x, y)
+    C = X + 1j * Y
+
+    Z = np.zeros_like(C, dtype=np.complex128)
+    M = np.zeros(C.shape, dtype=int)
+
+    for i in range(max_iter):
+        mask = np.abs(Z) <= 2
+        Z[mask] = Z[mask]**2 + C[mask]
+        M[mask] += 1
+
+    return M
+def compute_mandelbrot(x_min, x_max, y_min, y_max, width=100, height=100, max_iter=100):
+    """Create a grid of Mandelbrot values."""
+    x_vals = np.linspace(x_min, x_max, width)
+    y_vals = np.linspace(y_min, y_max, height)
+
+    results = np.zeros((height, width), dtype=int)
+
+    for row in range(height):
+        y = y_vals[row]
+        for col in range(width):
+            x = x_vals[col]
+            c = x + 1j * y
+            results[row, col] = mandelbrot_point(c, max_iter)
+
+    return results
 
 @njit
 def mandelbrot_chunk(row_start, row_end, N,
@@ -167,77 +206,207 @@ if __name__ == "__main__":
     max_iter = 100
     x_min, x_max = -2.5, 1.0
     y_min, y_max = -1.25, 1.25
+    N, max_iter = 1024, 100
+    X_MIN, X_MAX, Y_MIN, Y_MAX = -2.5, 1.0, -1.25, 1.25
+
+    # Serial baseline (Numba already warm after M1 warm-up)
+    times = []
+    for _ in range(3):
+        t0 = time.perf_counter()
+        mandelbrot_serial(N, X_MIN, X_MAX, Y_MIN, Y_MAX, max_iter)
+        times.append(time.perf_counter() - t0)
+    t_serial = statistics.median(times)
+
+    for n_workers in range(1, os.cpu_count() + 1):
+        chunk_size = max(1, N // n_workers)
+        chunks, row = [], 0
+        while row < N:
+            end = min(row + chunk_size, N)
+            chunks.append((row, end, N, X_MIN, X_MAX, Y_MIN, Y_MAX, max_iter))
+            row = end
+
+        with Pool(processes=n_workers) as pool:
+            pool.map(_worker, chunks)  # warm-up: Numba JIT in all workers
+            times = []
+            for _ in range(3):
+                t0 = time.perf_counter()
+                np.vstack(pool.map(_worker, chunks))
+                times.append(time.perf_counter() - t0)
+            t_par = statistics.median(times)
+
+        speedup = t_serial / t_par
+        print(f"{n_workers:2d} workers: {t_par:.3f}s, speedup={speedup:.2f}x, eff={speedup/n_workers*100:.0f}%")
     
-    print("-" * 40)
-    print("MP2 M2: Chunk Size Optimization")
-    print("-" * 40)
+    print("=" * 60)
+    print("MP2 M3: Comprehensive Performance Analysis")
+    print("=" * 60)
     print(f"\nGrid: {N} x {N}")
     print(f"Max iterations: {max_iter}")
     print(f"Region: x=[{x_min}, {x_max}], y=[{y_min}, {y_max}]")
     
-    # === SERIAL BASELINE ===
-    print("\n" + "-" * 40)
-    print("SERIAL BASELINE")
-    print("-" * 40)
-    
-    # Warm up JIT
-    _ = mandelbrot_serial(N, x_min, x_max, y_min, y_max, max_iter)
-    
-    # Time serial (3 runs, take median)
+    # === WARM-UP ===
+    print("\n" + "-" * 60)
+    print("WARM-UP")
+    print("-" * 60)
+    print("Running warm-up to compile Numba code...")
+    _ = mandelbrot_serial(64, x_min, x_max, y_min, y_max, max_iter)
+    print("Warm-up complete")
+
+    print("\n" + "-" * 60)
+    print("IMPLEMENTATION 0: Naive")
+    print("-" * 60)
+
     times = []
-    for _ in range(3):
+    for _ in range(5):
+        start = time.time()
+        compute_mandelbrot(-2.5, 1.0, -1.25, 1.25, 1024, 1024, 100)
+        times.append(time.time() - start)
+    t_naive = statistics.median(times)
+    print(f"Time: {t_naive:.3f} seconds")
+
+    # === IMPLEMENTATION 0: NUMPY ===
+
+    print("\n" + "-" * 60)
+    print("IMPLEMENTATION 0: Numpy")
+    print("-" * 60)
+
+    times = []
+    for _ in range(5):
+        start = time.time()
+        numpy_mandelbrot(-2.5, 1.0, -1.25, 1.25, 1024, 1024, 100)
+        times.append(time.time() - start)
+    t_numpy = statistics.median(times)
+    numpy_speedup = t_naive / t_numpy
+    print(f"Time: {t_numpy:.3f} seconds")
+    print(f"Speedup: {numpy_speedup:.2f}x over naive")
+    
+    # === IMPLEMENTATION 1: SERIAL BASELINE ===
+    print("\n" + "-" * 60)
+    print("IMPLEMENTATION 1: Serial Numba")
+    print("-" * 60)
+    
+    times = []
+    for _ in range(5):
         start = time.time()
         mandelbrot_serial(N, x_min, x_max, y_min, y_max, max_iter)
         times.append(time.time() - start)
     t_serial = statistics.median(times)
-    print(f"Serial time: {t_serial:.3f} seconds")
+    t_serial_speedup = t_naive / t_serial
+    print(f"Time: {t_serial:.3f} seconds")
+    print(f"Speedup: {t_serial_speedup:.2f}x over naive")
     
-    # === CHUNK SIZE SWEEP ===
-    print("\n" + "-" * 40)
-    print("CHUNK SIZE SWEEP")
-    print("-" * 40)
+    # === IMPLEMENTATION 2: PARALLEL WITH OPTIMAL CHUNKS ===
+    print("\n" + "-" * 60)
+    print("IMPLEMENTATION 2: Parallel (2 workers, 2 chunks)")
+    print("-" * 60)
     
-    # Fix workers at optimum (from my results, 2 is best)
-    opt_workers = 2
-    print(f"Fixed workers: {opt_workers} (optimum from benchmark)")
+    n_workers = 2
+    n_chunks = 2  # 1x multiplier
     
-    # Test different chunk size multipliers
-    multipliers = [1, 2, 4, 8, 16]
+    # Create chunks
+    chunk_size = max(1, N // n_chunks)
+    chunks = []
+    row = 0
+    while row < N:
+        row_end = min(row + chunk_size, N)
+        chunks.append((row, row_end, N, x_min, x_max, y_min, y_max, max_iter))
+        row = row_end
     
-    print(f"\n{'Multiplier':>10} {'Chunks':>8} {'Time (s)':>10} {'Speedup':>10} {'LIF':>10}")
-    print("-" * 40)
-    
-    for mult in multipliers:
-        n_chunks = mult * opt_workers
+    # Time parallel version
+    with Pool(processes=n_workers) as pool:
+        # Warm-up
+        tiny = [(0, 8, 8, x_min, x_max, y_min, y_max, max_iter)]
+        pool.map(_worker, tiny)
         
-        # Create chunks
-        chunk_size = max(1, N // n_chunks)
-        chunks = []
-        row = 0
-        while row < N:
-            row_end = min(row + chunk_size, N)
-            chunks.append((row, row_end, N, x_min, x_max, y_min, y_max, max_iter))
-            row = row_end
-        
-        # Create pool once and reuse for timing
-        with Pool(processes=opt_workers) as pool:
-            # Warm-up (load Numba cache)
-            tiny = [(0, 8, 8, x_min, x_max, y_min, y_max, max_iter)]
-            pool.map(_worker, tiny)
-            
-            # Timed runs
-            times = []
-            for _ in range(3):
-                start = time.time()
-                np.vstack(pool.map(_worker, chunks))
-                times.append(time.time() - start)
-            t_par = statistics.median(times)
-        
-        speedup = t_serial / t_par
-        lif = (opt_workers * t_par / t_serial) - 1
-        
-        print(f"{mult:10d}x {n_chunks:8d} {t_par:10.3f} {speedup:10.2f}x {lif:10.3f}")
+        # Timed runs
+        times = []
+        for _ in range(5):
+            start = time.time()
+            np.vstack(pool.map(_worker, chunks))
+            times.append(time.time() - start)
+        t_par = statistics.median(times)
     
-    print("\n" + "-" * 40)
-    print("SWEET SPOT: Identify smallest LIF value")
-    print("-" * 40)
+    speedup = t_naive / t_par
+    efficiency = (speedup / n_workers) * 100
+    lif = (n_workers * t_par / t_serial) - 1
+    
+    print(f"Time: {t_par:.3f} seconds")
+    print(f"Speedup: {speedup:.2f}x")
+    print(f"Efficiency: {efficiency:.1f}%")
+    print(f"LIF: {lif:.3f}")
+    
+    # === IMPLEMENTATION 3: PARALLEL WITH MORE CHUNKS ===
+    print("\n" + "-" * 60)
+    print("IMPLEMENTATION 3: Parallel (2 workers, 32 chunks)")
+    print("-" * 60)
+    
+    n_chunks = 32  # 16x multiplier
+    
+    # Create chunks
+    chunk_size = max(1, N // n_chunks)
+    chunks = []
+    row = 0
+    while row < N:
+        row_end = min(row + chunk_size, N)
+        chunks.append((row, row_end, N, x_min, x_max, y_min, y_max, max_iter))
+        row = row_end
+    
+    # Time parallel version
+    with Pool(processes=n_workers) as pool:
+        # Warm-up
+        tiny = [(0, 8, 8, x_min, x_max, y_min, y_max, max_iter)]
+        pool.map(_worker, tiny)
+        
+        # Timed runs
+        times = []
+        for _ in range(5):
+            start = time.time()
+            np.vstack(pool.map(_worker, chunks))
+            times.append(time.time() - start)
+        t_par2 = statistics.median(times)
+    
+    speedup2 = t_naive / t_par2
+    efficiency2 = (speedup2 / n_workers) * 100
+    lif2 = (n_workers * t_par2 / t_serial) - 1
+
+    
+    print(f"Time: {t_par2:.3f} seconds")
+    print(f"Speedup: {speedup2:.2f}x")
+    print(f"Efficiency: {efficiency2:.1f}%")
+    print(f"LIF: {lif2:.3f}")
+    
+    # === SUMMARY TABLE ===
+    print("\n" + "=" * 60)
+    print("SUMMARY: Performance Comparison")
+    print("=" * 60)
+    print(f"\n{'Implementation':<30} {'Time (s)':>10} {'Speedup':>10} {'Efficiency':>12} {'LIF':>10}")
+    print("-" * 80)
+    print(f"{'Naive':<30} {t_naive:>10.3f} {1.00:>10.2f}x {'-':>12} {'-':>10}")
+    print(f"{'Serial Numba':<30} {t_serial:>10.3f} {t_serial_speedup:>10.2f}x {'-':>12} {'-':>10}")
+    print(f"{'Parallel (2 workers, 2 chunks)':<30} {t_par:>10.3f} {speedup:>10.2f}x {efficiency:>11.1f}% {lif:>10.3f}")
+    print(f"{'Parallel (2 workers, 32 chunks)':<30} {t_par2:>10.3f} {speedup2:>10.2f}x {efficiency2:>11.1f}% {lif2:>10.3f}")
+    print(f"{'Numpy Vectorized':<30} {t_numpy:>10.3f} {numpy_speedup:>10.2f}x {'-':>12} {'-':>10}")
+    
+    # === IMPLIED SERIAL FRACTION ===
+    print("\n" + "-" * 60)
+    print("AMDAHL'S LAW ANALYSIS")
+    print("-" * 60)
+    
+    # Using best parallel result
+    best_speedup = max(speedup, speedup2)
+    best_workers = n_workers
+    
+    # Back-solve for implied serial fraction: s = (1/Sp - 1/p) / (1 - 1/p)
+    implied_s = ((1/best_speedup) - (1/best_workers)) / (1 - (1/best_workers))
+    
+    print(f"Best speedup achieved: {best_speedup:.2f}x with {best_workers} workers")
+    print(f"Implied serial fraction s = {implied_s:.3f}")
+    print(f"This means approximately {implied_s*100:.1f}% of the code is effectively serial")
+    print(f"(due to overhead, not actual algorithm serial fraction)")
+    
+    print("\n" + "=" * 60)
+    print("MP2 M3: Analysis Complete")
+    print("=" * 60)
+
+
+    
