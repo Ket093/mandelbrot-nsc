@@ -253,6 +253,39 @@ if __name__ == "__main__":
 
     results = []  # Store (chunks, lif) for finding sweet spot
     
+    for mult in multipliers:
+        n_chunks = fixed_workers * mult
+
+        # Calculate chunk size
+        chunk_size = max(1, N // n_chunks)
+        chunks = []
+        row = 0
+        while row < N:
+            row_end = min(row + chunk_size, N)
+            chunks.append((row, row_end, N, X_MIN, X_MAX, Y_MIN, Y_MAX, max_iter))
+            row = row_end
+
+        # Time parallel version
+        with Pool(processes=fixed_workers) as pool:
+            # Warm-up
+            tiny = [(0, 8, 8, X_MIN, X_MAX, Y_MIN, Y_MAX, max_iter)]
+            pool.map(_worker, tiny)
+
+            # Timed runs
+            times = []
+            for _ in range(3):
+                t0 = time.perf_counter()
+                np.vstack(pool.map(_worker, chunks))
+                times.append(time.perf_counter() - t0)
+            t_par = statistics.median(times)
+
+        speedup = t_serial / t_par
+        lif = (fixed_workers * t_par / t_serial) - 1
+
+        print(f"{mult:10d}x {n_chunks:10d} {t_par:12.3f} {speedup:10.2f}x {lif:12.3f}")
+
+        results.append((n_chunks, lif))
+    
     print("\n" + "-" * 60)
     print("M2 COMPLETE - Starting M3 Analysis")
     print("=" * 60)
