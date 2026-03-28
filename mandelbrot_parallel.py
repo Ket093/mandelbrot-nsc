@@ -421,12 +421,12 @@ if __name__ == "__main__":
             times.append(time.time() - start)
         t_par2 = statistics.median(times)
     
-    speedup2 = t_naive / t_par2
+    speedup2 = t_serial / t_par2
     lif2 = (n_workers * t_par2 / t_serial) - 1
 
     
     print(f"Time: {t_par2:.3f} seconds")
-    print(f"Speedup: {speedup2:.2f}x")
+    print(f"Speedup: {speedup2:.2f}x over serial Numba")
     print(f"LIF: {lif2:.3f}")
     
     # === SUMMARY TABLE ===
