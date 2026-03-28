@@ -384,11 +384,11 @@ if __name__ == "__main__":
             times.append(time.time() - start)
         t_par = statistics.median(times)
     
-    speedup = t_naive / t_par
+    speedup = t_serial / t_par
     lif = (n_workers * t_par / t_serial) - 1
     
     print(f"Time: {t_par:.3f} seconds")
-    print(f"Speedup: {speedup:.2f}x")
+    print(f"Speedup: {speedup:.2f}x over serial Numba")
     print(f"LIF: {lif:.3f}")
     
     # === IMPLEMENTATION 3: PARALLEL WITH MORE CHUNKS ===
