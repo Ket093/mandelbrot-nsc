@@ -233,8 +233,9 @@ if __name__ == "__main__":
                 times.append(time.perf_counter() - t0)
             t_par = statistics.median(times)
 
-        speedup = t_serial / t_par
-        print(f"{n_workers:2d} workers: {t_par:.3f}s, speedup={speedup:.2f}x, eff={speedup/n_workers*100:.0f}%")
+            speedup = t_serial / t_par
+            lif = (n_workers * t_par / t_serial) - 1
+            print(f"{n_workers:2d} workers: {t_par:.3f}s, speedup={speedup:.2f}x, LIF={lif:.3f}")
     
     print("\n" + "-" * 60)
     print("M2 COMPLETE - Starting M3 Analysis")
