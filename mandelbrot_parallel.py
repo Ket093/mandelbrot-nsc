@@ -457,6 +457,37 @@ if __name__ == "__main__":
     print(f"Implied serial fraction s = {implied_s:.3f}")
     print(f"This means approximately {implied_s*100:.1f}% of the code is effectively serial")
     print(f"(due to overhead, not actual algorithm serial fraction)")
+
+        # === COMPARISON WITH L04 RESULT ===
+    print("\n" + "-" * 60)
+    print("COMPARISON WITH L04 RESULT")
+    print("-" * 60)
+    
+    # L04 result (original parallel without chunking)
+    # From earlier benchmark: 2 workers gave 2.00x speedup
+    l04_best_workers = 2
+    l04_best_speedup = 2.00
+    l04_implied_s = ((1 / l04_best_speedup) - (1 / l04_best_workers)) / (1 - (1 / l04_best_workers))
+    
+    print(f"L04 (original parallel, no chunking):")
+    print(f"  - Best speedup: {l04_best_speedup:.2f}x with {l04_best_workers} workers")
+    print(f"  - Implied serial fraction s = {l04_implied_s:.3f}")
+    
+    print(f"\nL05 (chunked parallel with cache=True):")
+    print(f"  - Best speedup: {best_speedup:.2f}x with {best_workers} workers")
+    print(f"  - Implied serial fraction s = {implied_s:.3f}")
+    
+    print(f"\nComparison:")
+    if implied_s > l04_implied_s:
+        print(f"  - L05 s ({implied_s:.3f}) is LARGER than L04 s ({l04_implied_s:.3f})")
+        print(f"  - This indicates L05 measurement is more accurate due to:")
+        print(f"    * Proper warm-up runs")
+        print(f"    * Multiple iterations with median timing")
+        print(f"    * cache=True for Numba functions")
+        print(f"    * Exclusion of startup overhead from timing loops")
+    else:
+        print(f"  - L05 s ({implied_s:.3f}) is SMALLER than L04 s ({l04_implied_s:.3f})")
+        print(f"  - This indicates improved load balance from chunking")
     
     print("\n" + "=" * 60)
     print("MP2 M3: Analysis Complete")
