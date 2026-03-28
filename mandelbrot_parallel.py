@@ -252,7 +252,7 @@ if __name__ == "__main__":
     print("-" * 65)
 
     results = []  # Store (chunks, lif) for finding sweet spot
-    
+
     for mult in multipliers:
         n_chunks = fixed_workers * mult
 
@@ -285,6 +285,13 @@ if __name__ == "__main__":
         print(f"{mult:10d}x {n_chunks:10d} {t_par:12.3f} {speedup:10.2f}x {lif:12.3f}")
 
         results.append((n_chunks, lif))
+
+         # Find sweet spot (minimum LIF)
+    best_chunks, best_lif = min(results, key=lambda x: x[1])
+    print("\n" + "-" * 65)
+    print(f"SWEET SPOT: {best_chunks} chunks gives minimum LIF = {best_lif:.3f}")
+    print("(LIF = Load Imbalance Factor; lower is better)")
+    print("-" * 65)
     
     print("\n" + "-" * 60)
     print("M2 COMPLETE - Starting M3 Analysis")
