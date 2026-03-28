@@ -236,6 +236,17 @@ if __name__ == "__main__":
             speedup = t_serial / t_par
             lif = (n_workers * t_par / t_serial) - 1
             print(f"{n_workers:2d} workers: {t_par:.3f}s, speedup={speedup:.2f}x, LIF={lif:.3f}")
+
+    print("\n" + "=" * 60)
+    print("MP2 M2: Chunk Size Sweep (Fixed Workers = 2)")
+    print("=" * 60)
+
+    # Fix workers at optimum (from earlier benchmark, 2 workers gave best performance)
+    fixed_workers = 2
+    print(f"Fixed workers: {fixed_workers}")
+
+    # Test chunk multipliers: 1x, 2x, 4x, 8x, 16x workers
+    multipliers = [1, 2, 4, 8, 16]
     
     print("\n" + "-" * 60)
     print("M2 COMPLETE - Starting M3 Analysis")
