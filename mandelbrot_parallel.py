@@ -247,6 +247,11 @@ if __name__ == "__main__":
 
     # Test chunk multipliers: 1x, 2x, 4x, 8x, 16x workers
     multipliers = [1, 2, 4, 8, 16]
+
+    print(f"\n{'Multiplier':>10} {'Chunks':>10} {'Time (s)':>12} {'Speedup':>10} {'LIF':>12}")
+    print("-" * 65)
+
+    results = []  # Store (chunks, lif) for finding sweet spot
     
     print("\n" + "-" * 60)
     print("M2 COMPLETE - Starting M3 Analysis")
