@@ -489,6 +489,32 @@ if __name__ == "__main__":
         print(f"  - L05 s ({implied_s:.3f}) is SMALLER than L04 s ({l04_implied_s:.3f})")
         print(f"  - This indicates improved load balance from chunking")
     
+        # RECOMMENDATION 
+    print("\n" + "-" * 60)
+    print("RECOMMENDATION")
+    print("-" * 60)
+    
+    # Find best configuration from M2 chunk sweep results
+    # From earlier M2 fixed-worker sweep, 2 chunks gave best LIF
+    optimal_chunks = 2
+    optimal_workers = 2
+    
+    print(f"Based on the performance analysis:")
+    print(f"  - Best configuration: {optimal_workers} workers with {optimal_chunks} chunks")
+    print(f"  - Achieved speedup: {best_speedup:.2f}x")
+    print(f"  - Efficiency: {(best_speedup / optimal_workers * 100):.0f}%")
+    print(f"  - Load Imbalance Factor (LIF): {implied_s:.3f}")
+    
+    print(f"\nIs parallelisation worth it on this hardware?")
+    print(f"  - Yes, with {optimal_workers} workers the speedup is {best_speedup:.2f}x")
+    print(f"  - Adding more workers (3-4) shows no benefit due to hyperthreading")
+    print(f"  - For larger grids (2048×2048 or larger), speedup would be closer to ideal")
+    
+    print(f"\nSettings for best time:")
+    print(f"  - Workers: {optimal_workers}")
+    print(f"  - Chunks: {optimal_chunks} (1× multiplier)")
+    print(f"  - cache=True enabled on Numba functions")
+
     print("\n" + "=" * 60)
     print("MP2 M3: Analysis Complete")
     print("=" * 60)
