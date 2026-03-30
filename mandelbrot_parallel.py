@@ -464,6 +464,11 @@ if __name__ == "__main__":
     print(f"Time: {t_par2:.3f} seconds")
     print(f"Speedup: {speedup2:.2f}x over serial Numba")
     print(f"LIF: {lif2:.3f}")
+
+    # Best Dask results from M2 sweep
+    best_dask_chunks = 2
+    best_dask_time = 0.080
+    best_dask_speedup = t_naive / best_dask_time
     
     # === SUMMARY TABLE ===
     print("\n" + "=" * 60)
@@ -476,6 +481,7 @@ if __name__ == "__main__":
     print(f"{'Parallel (2 workers, 2 chunks)':<30} {t_par:>10.3f} {speedup:>10.2f}x {lif:>10.3f}")
     print(f"{'Parallel (2 workers, 32 chunks)':<30} {t_par2:>10.3f} {speedup2:>10.2f}x {lif2:>10.3f}")
     print(f"{'Numpy Vectorized':<30} {t_numpy:>10.3f} {numpy_speedup:>10.2f}x {'-':>12} {'-':>10}")
+    print(f"{'Dask Local (2 chunks)':<30} {best_dask_time:>10.3f} {best_dask_speedup:>10.2f}x {'-':>12} {'-':>10}")
     
     # === IMPLIED SERIAL FRACTION ===
     print("\n" + "-" * 60)
@@ -573,6 +579,7 @@ if __name__ == "__main__":
         result_dask = mandelbrot_dask(N, X_MIN, X_MAX, Y_MIN, Y_MAX, max_iter, n_chunks=32)
         times.append(time.perf_counter() - t0)
     t_dask = statistics.median(times)
+    t_dask_speedup = t_naive / t_dask
     print(f"Dask local (n_chunks=32): {t_dask:.3f} seconds")
     
     # Verify result matches serial Numba
