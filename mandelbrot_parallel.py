@@ -202,6 +202,40 @@ def mandelbrot_parallel(N, x_min, x_max, y_min, y_max,
         # Actual computation
         results = new_pool.map(_worker, chunks)
         return np.vstack(results)
+    
+def mandelbrot_dask(N, x_min, x_max, y_min, y_max, 
+                    max_iter=100, n_chunks=32):
+    """
+    Compute Mandelbrot set using Dask delayed.
+    
+    Parameters
+    ----------
+    N : int
+        Grid size (N x N pixels)
+    x_min, x_max, y_min, y_max : float
+        Coordinate boundaries
+    max_iter : int
+        Maximum iterations
+    n_chunks : int
+        Number of chunks to split work into
+    
+    Returns
+    -------
+    numpy.ndarray
+        2D array of shape (N, N) with iteration counts
+    """
+    chunk_size = max(1, N // n_chunks)
+    tasks = []
+    row = 0
+    
+    while row < N:
+        row_end = min(row + chunk_size, N)
+        tasks.append(delayed(mandelbrot_chunk)(
+            row, row_end, N, x_min, x_max, y_min, y_max, max_iter))
+        row = row_end
+    
+    parts = dask.compute(*tasks)
+    return np.vstack(parts)
 
 if __name__ == "__main__":
     N = 1024
