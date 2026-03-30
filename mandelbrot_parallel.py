@@ -582,6 +582,19 @@ if __name__ == "__main__":
     else:
         print("Verification: FAILED")
 
+            # MP2 M2: Dask Chunk Size Sweep 
+    print("\n" + "-" * 50)
+    print("MP2 M2: Dask Chunk Size Sweep")
+    print("-" * 50)
+    
+    # Test different chunk sizes
+    chunk_multipliers = [1, 2, 4, 8, 16, 32, 64, 128]
+    
+    print(f"\n{'Chunks':>8} {'Time (s)':>10} {'Speedup':>10} {'LIF':>10}")
+    print("-" * 45)
+    
+    results = []
+
     print("\n" + "=" * 60)
     print("MP2 M3: Analysis Complete")
     print("=" * 60)
