@@ -595,6 +595,20 @@ if __name__ == "__main__":
     
     results = []
 
+    for n_chunks in chunk_multipliers:
+        times = []
+        for _ in range(3):
+            t0 = time.perf_counter()
+            result = mandelbrot_dask(N, X_MIN, X_MAX, Y_MIN, Y_MAX, max_iter, n_chunks=n_chunks)
+            times.append(time.perf_counter() - t0)
+        t_par = statistics.median(times)
+        
+        speedup = t_serial / t_par
+        lif = (2 * t_par / t_serial) - 1
+        
+        print(f"{n_chunks:8d} {t_par:10.3f} {speedup:10.2f}x {lif:10.3f}")
+        results.append((n_chunks, t_par, speedup, lif))
+
     print("\n" + "=" * 60)
     print("MP2 M3: Analysis Complete")
     print("=" * 60)
