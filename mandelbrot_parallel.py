@@ -609,6 +609,15 @@ if __name__ == "__main__":
         print(f"{n_chunks:8d} {t_par:10.3f} {speedup:10.2f}x {lif:10.3f}")
         results.append((n_chunks, t_par, speedup, lif))
 
+            # Find sweet spot (minimum time)
+    best = min(results, key=lambda x: x[1])
+    print("\n" + "-" * 45)
+    print(f"SWEET SPOT: {best[0]} chunks gives minimum time = {best[1]:.3f}s")
+    
+    # Close cluster
+    client.close()
+    cluster.close()
+
     print("\n" + "=" * 60)
     print("MP2 M3: Analysis Complete")
     print("=" * 60)
