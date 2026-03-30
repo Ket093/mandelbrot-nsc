@@ -551,6 +551,37 @@ if __name__ == "__main__":
     print(f"  - Chunks: {optimal_chunks} (1× multiplier)")
     print(f"  - cache=True enabled on Numba functions")
 
+        #  MP2 M1: Dask Mandelbrot 
+    print("\n" + "-" * 60)
+    print("MP2 M1: Dask Mandelbrot (Local)")
+    print("-" * 60)
+    
+    from dask.distributed import Client, LocalCluster
+    
+    # Create local cluster with workers matching your physical cores
+    cluster = LocalCluster(n_workers=2, threads_per_worker=1)
+    client = Client(cluster)
+    print(f"Dashboard: {client.dashboard_link}")
+    
+    # Warm up Numba JIT in all workers
+    client.run(lambda: mandelbrot_chunk(0, 8, 8, X_MIN, X_MAX, Y_MIN, Y_MAX, 10))
+    
+    # Time Dask Mandelbrot (3 runs, median)
+    times = []
+    for _ in range(3):
+        t0 = time.perf_counter()
+        result_dask = mandelbrot_dask(N, X_MIN, X_MAX, Y_MIN, Y_MAX, max_iter, n_chunks=32)
+        times.append(time.perf_counter() - t0)
+    t_dask = statistics.median(times)
+    print(f"Dask local (n_chunks=32): {t_dask:.3f} seconds")
+    
+    # Verify result matches serial Numba
+    result_serial = mandelbrot_serial(N, X_MIN, X_MAX, Y_MIN, Y_MAX, max_iter)
+    if np.array_equal(result_dask, result_serial):
+        print("Verification: PASSED (matches serial Numba)")
+    else:
+        print("Verification: FAILED")
+
     print("\n" + "=" * 60)
     print("MP2 M3: Analysis Complete")
     print("=" * 60)
