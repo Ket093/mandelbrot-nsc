@@ -1,0 +1,294 @@
+2026-04-05 7a2da04 MP2 M4:Add Dask cluster benchmark script (Strato, 2 workers, 64 chunks, 0.101s)
+
+ cluster_benchmark.py | 81 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 81 insertions(+)
+2026-04-02 846cb2f MP2 (Dask cluster): Modified setup.py file - replaced the command with correct python code
+
+ setup.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+2026-04-02 aa3684a MP2 (Dask Cluster):Added setup.py for installing mandelbrot_parallel as a package as I encountered errors in the process prior
+
+ setup.py | 6 ++++++
+ 1 file changed, 6 insertions(+)
+2026-03-30 31af78b MP2 M3 (Dask): Fixed summary table to use best Dask results (2 chunks)
+
+ mandelbrot_parallel.py | 7 +++++++
+ 1 file changed, 7 insertions(+)
+2026-03-30 1421456 MP2 M2(Dask): Add sweet spot calculation and close cluster
+
+ mandelbrot_parallel.py | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+2026-03-30 1b1cb49 MP2 M1 (Dask): Add sweep loop to test multiple chunk sizes
+
+ mandelbrot_parallel.py | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+2026-03-30 0df05a2 MP2 M1(Dask): Added header and table setup for Dask chunk sweep
+
+ mandelbrot_parallel.py | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+2026-03-30 e6b59b0 MP2 M1(Dask):Removed cluster close and kept it open for M2 sweep
+
+ mandelbrot_parallel.py | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+2026-03-30 43d98a6 MP2 M1 (dask):Add mandelbrot_dask function using delayed
+
+ mandelbrot_parallel.py | 34 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
+2026-03-30 a6fe9af MP2 M1(for dask): Add dask imports for delayed and compute
+
+ mandelbrot_parallel.py | 2 ++
+ 1 file changed, 2 insertions(+)
+2026-03-28 d732e90 fixed speedup baseline with 32 chunks to use serial Numba
+
+ mandelbrot_parallel.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+2026-03-28 3007cbe MP2 M3: Fixed speedup baseline from naive to serial Numba
+
+ mandelbrot_parallel.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+2026-03-28 a61fc25 MP2 M3: Add recommendation section with best configuration
+
+ mandelbrot_parallel.py | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+2026-03-28 0af8505 MP2 M3: Add L04 comparison section to output
+
+ mandelbrot_parallel.py | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+2026-03-28 0779701 MP2 M2: Add sweet spot calculation to find minimum LIF
+
+ mandelbrot_parallel.py | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+2026-03-28 46d6bc9 MP2 M2: Add loop to test each chunk multiplier with timing
+
+ mandelbrot_parallel.py | 33 +++++++++++++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
+2026-03-28 f6ea4ae MP2 M2:Add table header and results list for chunk sweep
+
+ mandelbrot_parallel.py | 5 +++++
+ 1 file changed, 5 insertions(+)
+2026-03-28 246e5c4 MP2 M2: Define fixed workers and chunk multipliers(which was omitted)
+
+ mandelbrot_parallel.py | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+2026-03-28 565e314 Added header for fixed-worker chunk sweep section
+
+ mandelbrot_parallel.py | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+2026-03-27 445018f MP2 M3: Added generated plot image
+
+ speedup_plot.png | Bin 0 -> 64326 bytes
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+2026-03-27 3e5893c MP2 M3: Add save and display functionalities, displaying a confirmation message as well
+
+ speedup_plot.py | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
+2026-03-27 34c7752 MP2 M3:Added labels, title, legend, grid, and axis limits
+
+ speedup_plot.py | 23 +++--------------------
+ 1 file changed, 3 insertions(+), 20 deletions(-)
+2026-03-27 80e3bcf Create speedup_py.py plot from M2 sweep. Matplotlib imported for plotting, array of workers defined (1-4), Actual speed up and Ideal speed up defined for perfect scaling
+
+ speedup_plot.py | 34 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
+2026-03-27 77e8d09 Added a visual seperators between sections
+
+ mandelbrot_parallel.py | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
+2026-03-27 f4c4a5b MP2 M2: Added LIF calculation and removed 'efficiency' which wasn't needed
+
+ mandelbrot_parallel.py | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+2026-03-27 e4f4fc7 MP2 M1: Modified the mandelbrot_chunk function to have cache=True which was ommited
+
+ mandelbrot_parallel.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+2026-03-27 3bf0de8 MP2 M1: Modified cache=True to prevent Numba recompilation in each worker process
+
+ mandelbrot.png | Bin 0 -> 75910 bytes
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+2026-03-27 9eaaaa3 MP2 M3: Added required implementations for benchmarking which were omitted
+
+ mandelbrot_parallel.py | 279 +++++++++++++++++++++++++++++++++++++++----------
+ 1 file changed, 224 insertions(+), 55 deletions(-)
+2026-03-17 b2c1d46  MP2 M3: Add comprehensive performance analysis framework - Add warm-up section to compile Numba before timing - Add serial baseline timing with 5 runs using median - Add parallel test with optional configuration (2 workers, 2 chunks) -Add parallel test with overdecomposed configuration(32 chunks) Add summary table comparing all implementations -Add Amdahl's Law analysis with implied serial fraction calculation -Use 5 runs and median for statistical accuracy
+
+ mandelbrot_parallel.py | 45 ++++++++++++++++++++++++++++++---------------
+ 1 file changed, 30 insertions(+), 15 deletions(-)
+2026-03-17 c541f84 Week 5 M1: Working parallel mandelbrot with n_chunks
+
+ mandelbrot_parallel.py | 66 ++++++++++++++++++++++++--------------------------
+ 1 file changed, 32 insertions(+), 34 deletions(-)
+2026-03-17 58ec596 Complete MP2: Parallel mandelbrot with full benchmark
+
+ mandelbrot_parallel.py | 67 +++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 66 insertions(+), 1 deletion(-)
+2026-03-17 35c5337 Add mandelbrot_parallel function for parallel computation
+
+ mandelbrot_parallel.py | 64 +++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 63 insertions(+), 1 deletion(-)
+2026-03-17 4b4b9e3 Add worker helper function for multiprocessing
+
+ mandelbrot_parallel.py | 30 +++++++++++++++++++++++++++++-
+ 1 file changed, 29 insertions(+), 1 deletion(-)
+2026-03-10 e4e2cca Added mandelbrot_chunk function for row-range computation.
+
+ mandelbrot_parallel.py | 30 +++++++++++++++++++++++++++++-
+ 1 file changed, 29 insertions(+), 1 deletion(-)
+2026-03-10 bdcb7a0 Added mandelbrot_pixel function for single point calculation. This will form the basic building block for all functions
+
+ mandelbrot_parallel.py | 35 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 34 insertions(+), 1 deletion(-)
+2026-03-10 771dd57 MP2 Begins: create mandelbro_parallel.py with imports
+
+ mandelbrot_parallel.py | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+2026-03-02 638f2a4 MP1 M4: changed symbol character count from 52 to 50 in order to help change a wrong commit message earlier submitted
+
+ milestone_scripts/m4_datatype.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+2026-03-02 c624abd MP1 M4: Corrected commit message from 'MP4 M4' which wasn't correct to MP1 M4: Add recommendation based results. (MP=Mini Project & M4=Milestone4)
+
+ milestone_scripts/m4_datatype.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+2026-03-02 8fbda41 MP4 M4: Add recommendation based on results
+
+ milestone_scripts/m4_datatype.py | 57 +++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 56 insertions(+), 1 deletion(-)
+2026-03-02 8ae2d12 Add a visual comparison and save image
+
+ milestone_scripts/m4_datatype.py | 25 ++++++++++++++++++++++++-
+ 1 file changed, 24 insertions(+), 1 deletion(-)
+2026-03-02 f33d8d3 Add timing loops for both precisions
+
+ milestone_scripts/m4_datatype.py | 28 +++++++++++++++++++++++++++-
+ 1 file changed, 27 insertions(+), 1 deletion(-)
+2026-03-02 ead02bc Add results dictionaries
+
+ milestone_scripts/m4_datatype.py | 21 ++++++++++++++++++++-
+ 1 file changed, 20 insertions(+), 1 deletion(-)
+2026-03-02 44ec4f1 Added float32 precision function
+
+ milestone_scripts/m4_datatype.py | 26 +++++++++++++++++++++++++-
+ 1 file changed, 25 insertions(+), 1 deletion(-)
+2026-03-02 1aac873 Added float64 precision function
+
+ milestone_scripts/m4_datatype.py | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+2026-03-02 7557aa1 Add header and imports for milestone4
+
+ milestone_scripts/m4_datatype.py | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+2026-03-02 ead37ad Added numba version benchmark
+
+ milestone_scripts/m3_numba.py | 27 ++++++++++++++++++++++++++-
+ 1 file changed, 26 insertions(+), 1 deletion(-)
+2026-03-02 cd8b4c2 Added benchmark function for naive version
+
+ milestone_scripts/m3_numba.py | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
+2026-03-02 3871893 Added benchmark function for NumPy and Numba
+
+ milestone_scripts/m3_numba.py | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+2026-03-02 9db5a48 Optimized with squared magnitude test (no sqrt)
+
+ milestone_scripts/m3_numba.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+2026-03-02 7f25825 Added inner loop wih abs() test
+
+ milestone_scripts/m3_numba.py | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+2026-03-02 045c0d6 Added row and column loops
+
+ milestone_scripts/m3_numba.py | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+2026-03-02 8f56021 Added coordinate and result arrays
+
+ milestone_scripts/m3_numba.py | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+2026-03-02 49044e6 Added Numba function skeleton
+
+ milestone_scripts/m3_numba.py | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+2026-03-02 b4374f2 Added all required imports
+
+ milestone_scripts/m3_numba.py | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
+2026-03-02 4e47bdd MP1 M3: Verify Numba installation
+
+ milestone_scripts/m3_numba.py | 18 ++++--------------
+ 1 file changed, 4 insertions(+), 14 deletions(-)
+2026-03-02 d101286 MP1 M3:Added file header and imports
+
+ milestone_scripts/m3_numba.py | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+2026-03-01 397c240 Added line_profiler script to & analyzed results,
+
+ milestone_scripts/m2_lineprofile.py | 48 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
+2026-03-01 58c29c0 MP1 M1: Added cProfile script for function-level profiling
+
+ milestone_scripts/m1_profile.py | 47 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 47 insertions(+)
+2026-02-28 fed0a92 Added NumPy vectorized function for increased speed
+
+ mandelbrot.py | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
+2026-02-25 3d5abe8 Added a benchmark for measurement to the algorigthm, having used NumPy for vectorization in order to accurately determine the time differences in processing and generating the mandelbrot image
+
+ Benchmark.py | 51 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 51 insertions(+)
+2026-02-15 81ae4aa Complete mandelbrot implementation with visualization. Changed most of the code to a version easier for my understanding
+
+ mandelbrot.py | 180 ++++++++--------------------------------------------------
+ 1 file changed, 25 insertions(+), 155 deletions(-)
+2026-02-10 cbe5e8d Added performance measurement with time
+
+ mandelbrot.py | 110 +++++++++++++++++++++++++++++++++-------------------------
+ 1 file changed, 63 insertions(+), 47 deletions(-)
+2026-02-10 be540b9 Added compute_mandelbrot grid function and performance measurement
+
+ mandelbrot.py | 60 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 59 insertions(+), 1 deletion(-)
+2026-02-10 7a2229d Added the grid function to the file
+
+ mandelbrot.py | 52 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 52 insertions(+)
+2026-02-10 027232f Added the implementation mandelbrot function and tested point values as required by sted (2)
+
+ mandelbrot.py | 64 +++++++++++++++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 49 insertions(+), 15 deletions(-)
+2026-02-08 6485465 Completely replaced initial test_packages script to a more understandable version and corrected a commit message typo
+
+ test_course_packages.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+2026-02-08 4ca4395 Completely replaced initial test script to a more understandable version
+2026-02-08 b624c31 Completed replaced the test packages script to a more understandable version
+
+ test_course_packages.py | 41 +++++++++++++++++------------------------
+ 1 file changed, 17 insertions(+), 24 deletions(-)
+2026-02-07 0b58a4e Added a comment to the skeleton
+
+ mandelbrot.py | 1 +
+ 1 file changed, 1 insertion(+)
+2026-02-07 20364bd Added mandelbrot skeleton to an initially empty mandelbrot.py file
+
+ mandelbrot.py | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+2026-02-07 733dab7 Update: Replaced manually created .yml with proper mamba export
+
+ environment.yml | 443 ++++++++++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 433 insertions(+), 10 deletions(-)
+2026-02-06 ef21e3b Added mandelbrot.py
+
+ mandelbrot.py | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+2026-02-05 70bff87 Updated to Exercise-Specific Format
+
+ environment.yml | 443 ++------------------------------------------------------
+ 1 file changed, 10 insertions(+), 433 deletions(-)
+2026-02-05 5dc132d Complete NSC2026 environment setup for Numerical Scientific Computing
+
+ environment.yml         | 437 ++++++++++++++++++++++++++++++++++++++++++++++++
+ test_course_packages.py |  24 +++
+ 2 files changed, 461 insertions(+)
