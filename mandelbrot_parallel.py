@@ -496,7 +496,7 @@ if __name__ == "__main__":
     print(f"Best speedup achieved: {best_speedup:.2f}x with {best_workers} workers")
     print(f"Implied serial fraction s = {implied_s:.3f}")
     print(f"This means approximately {implied_s*100:.1f}% of the code is effectively serial")
-    print(f"(due to overhead, not actual algorithm serial fraction)")
+    print("(due to overhead, not actual algorithm serial fraction)")
 
         # === COMPARISON WITH L04 RESULT ===
     print("\n" + "-" * 60)
@@ -509,25 +509,25 @@ if __name__ == "__main__":
     l04_best_speedup = 2.00
     l04_implied_s = ((1 / l04_best_speedup) - (1 / l04_best_workers)) / (1 - (1 / l04_best_workers))
     
-    print(f"L04 (original parallel, no chunking):")
+    print("L04 (original parallel, no chunking):")
     print(f"  - Best speedup: {l04_best_speedup:.2f}x with {l04_best_workers} workers")
     print(f"  - Implied serial fraction s = {l04_implied_s:.3f}")
     
-    print(f"\nL05 (chunked parallel with cache=True):")
+    print("\nL05 (chunked parallel with cache=True):")
     print(f"  - Best speedup: {best_speedup:.2f}x with {best_workers} workers")
     print(f"  - Implied serial fraction s = {implied_s:.3f}")
     
-    print(f"\nComparison:")
+    print("\nComparison:")
     if implied_s > l04_implied_s:
         print(f"  - L05 s ({implied_s:.3f}) is LARGER than L04 s ({l04_implied_s:.3f})")
-        print(f"  - This indicates L05 measurement is more accurate due to:")
-        print(f"    * Proper warm-up runs")
-        print(f"    * Multiple iterations with median timing")
-        print(f"    * cache=True for Numba functions")
-        print(f"    * Exclusion of startup overhead from timing loops")
+        print("  - This indicates L05 measurement is more accurate due to:")
+        print("    * Proper warm-up runs")
+        print("    * Multiple iterations with median timing")
+        print("    * cache=True for Numba functions")
+        print("    * Exclusion of startup overhead from timing loops")
     else:
         print(f"  - L05 s ({implied_s:.3f}) is SMALLER than L04 s ({l04_implied_s:.3f})")
-        print(f"  - This indicates improved load balance from chunking")
+        print("  - This indicates improved load balance from chunking")
     
         # RECOMMENDATION 
     print("\n" + "-" * 60)
@@ -539,21 +539,21 @@ if __name__ == "__main__":
     optimal_chunks = 2
     optimal_workers = 2
     
-    print(f"Based on the performance analysis:")
+    print("Based on the performance analysis:")
     print(f"  - Best configuration: {optimal_workers} workers with {optimal_chunks} chunks")
     print(f"  - Achieved speedup: {best_speedup:.2f}x")
     print(f"  - Efficiency: {(best_speedup / optimal_workers * 100):.0f}%")
     print(f"  - Load Imbalance Factor (LIF): {implied_s:.3f}")
     
-    print(f"\nIs parallelisation worth it on this hardware?")
+    print("\nIs parallelisation worth it on this hardware?")
     print(f"  - Yes, with {optimal_workers} workers the speedup is {best_speedup:.2f}x")
-    print(f"  - Adding more workers (3-4) shows no benefit due to hyperthreading")
-    print(f"  - For larger grids (2048×2048 or larger), speedup would be closer to ideal")
+    print("  - Adding more workers (3-4) shows no benefit due to hyperthreading")
+    print("  - For larger grids (2048×2048 or larger), speedup would be closer to ideal")
     
-    print(f"\nSettings for best time:")
+    print("\nSettings for best time:")
     print(f"  - Workers: {optimal_workers}")
     print(f"  - Chunks: {optimal_chunks} (1× multiplier)")
-    print(f"  - cache=True enabled on Numba functions")
+    print("  - cache=True enabled on Numba functions")
 
         #  MP2 M1: Dask Mandelbrot 
     print("\n" + "-" * 60)
